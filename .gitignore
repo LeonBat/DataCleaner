@@ -211,3 +211,5 @@ __marimo__/
 *txt 
 #don't include csv files
 *csv
+#don't include xlsx files
+*xlsx
