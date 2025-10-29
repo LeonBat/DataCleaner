@@ -117,6 +117,8 @@ class DataCleaner:
         else:
             raise ValueError(f"Unknown method: {method}. Please choose from 'zscore' or 'iqr'.")
         
+
+        
         #normalizing data
         def normalize_data(self, method: Literal["minmax", "zscore", "mean"] = "minmax") -> None:
             '''
