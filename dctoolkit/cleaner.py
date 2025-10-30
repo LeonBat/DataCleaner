@@ -20,8 +20,11 @@ import numpy as np
 # class DataCleaner
 
 class DataCleaner:
-    def __init__(self, path: str):
-        self.df = pd.read_csv(path)
+    def __init__(self, path_or_df: str | pd.DataFrame):
+        if isinstance(path_or_df, pd.DataFrame):
+            self.df = path_or_df.copy()
+        else:
+            self.df = pd.read_csv(path_or_df)
 
     
     ### Methods ###
