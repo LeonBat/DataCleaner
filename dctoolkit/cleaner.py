@@ -32,10 +32,11 @@ class DataCleaner:
         - copy: Whether to create a copy of the DataFrame when initialized with a DataFrame. Default is True.
 
         Returns: None
-        >>> cleaner = DataCleaner("data.csv", copy=False)
-        Returns: None
-        >>> cleaner = DataCleaner(df)
-        Returns: None
+
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({"A": [1, 2, 3]})
+        >>> cleaner = DataCleaner(df)            # initialize from DataFrame (copy by default)
+        >>> cleaner = DataCleaner("data.csv")    # initialize from CSV path
         '''
         if isinstance(path_or_df, pd.DataFrame):
             self.df = path_or_df.copy() if copy else path_or_df
@@ -57,18 +58,19 @@ class DataCleaner:
             "median"
             "mode"
             "drop"
-        -Default is "mean".
+        -Default is "mean"
+        - inplace: Whether to modify the dataframe in place. Default is True.
 
         Returns:
         - None: The function modifies the dataframe in place.
         - pd.DataFrame: If inplace is False, returns a new DataFrame with missing values filled.
 
-        >>> cleaner.fill_missing("mean")
-
-        >>> cleaner.fill_missing("replace")
-        Traceback (most recent call last):
-            ...
-        ValueError: Unknown strategy: replace. Please choose from 'mean', 'median', 'mode', or 'drop'.    
+        Examples:
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({"A": [1, None, 3], "B": ["x", None, "x"]})
+        >>> cleaner = DataCleaner(df)
+        >>> cleaner.fill_missing("mean")                 # modifies cleaner.df, returns None
+        >>> new_df = cleaner.fill_missing("mean", inplace=False)  # returns filled DataFrame   
         '''
         target = self.df if inplace else self.df.copy() #determines if inplace modification or copy
         if strategy == "mean":
@@ -102,13 +104,19 @@ class DataCleaner:
         '''
         This function removes duplicate rows from the dataframe.
 
-        Parameters: None
+        Parameters: 
+        - inplace: Whether to modify the dataframe in place. Default is True.
 
         Returns: 
         - None: The function modifies the dataframe in place.
         - pd.DataFrame: If inplace is False, returns a new DataFrame with duplicates removed.
 
-        >>> cleaner.remove_duplicates()
+        Examples:
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({"A": [1,1,2], "B":[10,10,20]})
+        >>> cleaner = DataCleaner(df)
+        >>> cleaner.remove_duplicates()                  # modifies cleaner.df
+        >>> deduped = cleaner.remove_duplicates(inplace=False)  # returns DataFrame without modifying self.df
         '''
         if inplace:
             self.df.drop_duplicates(inplace=True)
@@ -129,17 +137,18 @@ class DataCleaner:
             -"iqr"
         - threshold: The threshold value for outlier detection. Default is 3.0
         - Default method is "zscore".
+        - inplace: Whether to modify the dataframe in place. Default is True.
 
         Returns: 
         - None: The function modifies the dataframe in place.
         - pd.DataFrame: If inplace is False, returns a new DataFrame with outliers removed.
 
-        >>> cleaner.remove_outliers("zscore", 2.0)
-        >>> cleaner.remove_outliers("iqr")
-        >>> cleaner.remove_outliers("remove_outlier")
-        Traceback (most recent call last):
-            ...
-        ValueError: Unknown method: remove_outlier. Please choose from 'zscore' or 'iqr'.
+        Examples:
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({"A": [1,2,100]})
+        >>> cleaner = DataCleaner(df)
+        >>> cleaner.remove_outliers(method="zscore", threshold=2.0)  # inplace usage
+        >>> cleaned = cleaner.remove_outliers(method="iqr", inplace=False)  # functional usage
 
         '''
         target = self.df if inplace else self.df.copy()
@@ -179,14 +188,16 @@ class DataCleaner:
             -"zscore"
             -"mean"
         -Default: "minmax" normalization is applied.
+        - inplace: Whether to modify the dataframe in place. Default is True.
             
         Returns: None: The function modifies the dataframe in place.
 
-        >>> cleaner.normalize_data("minmax")
-        >>> cleaner.normalize_data("average")
-        Traceback(most recent calls):
-            ...
-        ValueError(f"Unknown method: {method}. Please choose from 'minmax', 'zscore', or 'mean'.")
+        Examples:
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({"A": [1,2,3], "B":[10,20,30]})
+        >>> cleaner = DataCleaner(df)
+        >>> cleaner.normalize_data(method="minmax")               # modifies cleaner.df
+        >>> scaled = cleaner.normalize_data(method="zscore", inplace=False)  # returns scaled DataFrame
         '''
 
         target = self.df if inplace else self.df.copy()
@@ -223,6 +234,13 @@ class DataCleaner:
 
         Returns: None
 
-        >>> cleaner.save_cleaned_data("cleaned_data.csv")
+        Examples:
+        >>> import pandas as pd, os
+        >>> df = pd.DataFrame({"A": [1,2]})
+        >>> cleaner = DataCleaner(df)
+        >>> out = "tmp_out.csv"
+        >>> cleaner.save_cleaned_data(out)
+        >>> os.path.exists(out)
+        True
         '''
         self.df.to_csv(output_path, index=False)
