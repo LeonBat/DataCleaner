@@ -13,6 +13,7 @@
 
 # Libraries
 from typing import Literal, Optional
+from unicodedata import numeric
 import pandas as pd
 import numpy as np
 
@@ -151,30 +152,54 @@ class DataCleaner:
         >>> cleaned = cleaner.remove_outliers(method="iqr", inplace=False)  # functional usage
 
         '''
+    def remove_outliers(self, method: Literal["zscore", "iqr"] = "zscore", threshold: Optional[float] = 3.0, *, inplace: bool = True) -> Optional[pd.DataFrame]:
+        """
+        Remove outliers using z-score or IQR on numeric columns.
+        - zscore: uses `threshold` for z-score cutoff.
+        - iqr: uses the standard 1.5 * IQR rule.
+        If inplace is True (default) updates self.df and returns None, otherwise returns a filtered DataFrame.
+        """
         target = self.df if inplace else self.df.copy()
         if method == "zscore":
             numeric = target.select_dtypes(include=[np.number])
-            # avoid zero-division: replace zero std with 1 (no scaling)
-            std = numeric.std(ddof=0).replace(0, 1)
-            z_scores = np.abs((numeric - numeric.mean()) / std)
-            mask = (z_scores < threshold).all(axis=1)
-            target = target.loc[mask]
+            if numeric.empty:
+                # nothing to do
+                result = target
+            else:
+                std = numeric.std(ddof=0).replace(0, 1)
+                z_scores = np.abs((numeric - numeric.mean()) / std)
+                mask = (z_scores < threshold).all(axis=1)
+                result = target.loc[mask]
 
         elif method == "iqr":
             numeric = target.select_dtypes(include=[np.number])
-            Q1 = numeric.quantile(0.25)
-            Q3 = numeric.quantile(0.75)
-            IQR = Q3 - Q1
-            mask = ~((numeric < (Q1 - 1.5 * IQR)) | (numeric > (Q3 + 1.5 * IQR))).any(axis=1)
-            target = target.loc[mask]
+            if numeric.empty:
+                result = target
+            else:
+                std = numeric.std(ddof=0).replace(0, 1)
+                z_scores = np.abs((numeric - numeric.mean()) / std)
+                mask = (z_scores < threshold).all(axis=1)
+                result = target.loc[mask]
+
+        elif method == "iqr":
+            numeric = target.select_dtypes(include=[np.number])
+            if numeric.empty:
+                result = target
+            else:
+                Q1 = numeric.quantile(0.25)
+                Q3 = numeric.quantile(0.75)
+                IQR = Q3 - Q1
+                k = 1.5
+                mask = ~((numeric < (Q1 - k * IQR)) | (numeric > (Q3 + k * IQR))).any(axis=1)
+                result = target.loc[mask]
 
         else:
             raise ValueError(f"Unknown method: {method}. Please choose from 'zscore' or 'iqr'.")
 
         if inplace:
-            self.df = target
+            self.df = result
             return None
-        return target
+        return result
 
         
     #normalizing data
