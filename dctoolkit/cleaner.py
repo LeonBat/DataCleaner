@@ -10,7 +10,6 @@
 # -Removing outliers
 
 
-
 # Libraries
 from typing import Literal, Optional
 import pandas as pd
@@ -19,12 +18,13 @@ import numpy as np
 
 # class DataCleaner
 
+
 class DataCleaner:
-    #constructor
-    #class can read from CSV path or accept DataFrame directly
+    # constructor
+    # class can read from CSV path or accept DataFrame directly
 
     def __init__(self, path_or_df: str | pd.DataFrame, *, copy: bool = True):
-        '''
+        """
         This class can read from a CSV file or accept a DataFrame directly.
 
         Parameters:
@@ -37,19 +37,23 @@ class DataCleaner:
         >>> df = pd.DataFrame({"A": [1, 2, 3]})
         >>> cleaner = DataCleaner(df)            # initialize from DataFrame (copy by default)
         >>> cleaner = DataCleaner("data.csv")    # initialize from CSV path
-        '''
+        """
         if isinstance(path_or_df, pd.DataFrame):
             self.df = path_or_df.copy() if copy else path_or_df
         else:
             self.df = pd.read_csv(path_or_df)
 
-    
     ### Methods ###
 
-    #filling missing values
-    def fill_missing(self, strategy: Literal["mean", "median", "mode", "drop"] = "mean", *, inplace: bool = True) -> Optional[pd.DataFrame]:
-        '''
-        This function fills missing values in the provided data by 
+    # filling missing values
+    def fill_missing(
+        self,
+        strategy: Literal["mean", "median", "mode", "drop"] = "mean",
+        *,
+        inplace: bool = True,
+    ) -> Optional[pd.DataFrame]:
+        """
+        This function fills missing values in the provided data by
         the specified strategy: "mean", "median", "mode", or "drop".
 
         Parameters:
@@ -70,10 +74,12 @@ class DataCleaner:
         >>> df = pd.DataFrame({"A": [1, None, 3], "B": ["x", None, "x"]})
         >>> cleaner = DataCleaner(df)
         >>> cleaner.fill_missing("mean")                 # modifies cleaner.df, returns None
-        >>> new_df = cleaner.fill_missing("mean", inplace=False)  # returns filled DataFrame   
-        '''
-        target = self.df if inplace else self.df.copy() #determines if inplace modification or copy
-        
+        >>> new_df = cleaner.fill_missing("mean", inplace=False)  # returns filled DataFrame
+        """
+        target = (
+            self.df if inplace else self.df.copy()
+        )  # determines if inplace modification or copy
+
         if strategy == "mean":
             target.fillna(target.mean(numeric_only=True), inplace=True)
 
@@ -92,24 +98,24 @@ class DataCleaner:
             target.dropna(inplace=True)
 
         else:
-            raise ValueError(f"Unknown strategy: {strategy}. Please choose from 'mean', 'median', 'mode', or 'drop'.")
-        
+            raise ValueError(
+                f"Unknown strategy: {strategy}. Please choose from 'mean', 'median', 'mode', or 'drop'."
+            )
+
         if inplace:
             self.df = target
             return None
         return target
 
-
-
-    #removing duplicates
+    # removing duplicates
     def remove_duplicates(self, *, inplace: bool = True) -> Optional[pd.DataFrame]:
-        '''
+        """
         This function removes duplicate rows from the dataframe.
 
-        Parameters: 
+        Parameters:
         - inplace: Whether to modify the dataframe in place. Default is True.
 
-        Returns: 
+        Returns:
         - None: The function modifies the dataframe in place.
         - pd.DataFrame: If inplace is False, returns a new DataFrame with duplicates removed.
 
@@ -119,17 +125,21 @@ class DataCleaner:
         >>> cleaner = DataCleaner(df)
         >>> cleaner.remove_duplicates()                  # modifies cleaner.df
         >>> deduped = cleaner.remove_duplicates(inplace=False)  # returns DataFrame without modifying self.df
-        '''
+        """
         if inplace:
             self.df.drop_duplicates(inplace=True)
             return None
         return self.df.drop_duplicates()
 
-
-
-    #removing outliers
-    def remove_outliers(self, method: Literal["zscore", "iqr"] = "zscore", threshold: Optional[float] = 3.0, *, inplace: bool = True) -> Optional[pd.DataFrame]:
-        '''
+    # removing outliers
+    def remove_outliers(
+        self,
+        method: Literal["zscore", "iqr"] = "zscore",
+        threshold: Optional[float] = 3.0,
+        *,
+        inplace: bool = True,
+    ) -> Optional[pd.DataFrame]:
+        """
         This function removes outliers from the dataframe using the specified method:
         "zscore" or "iqr".
 
@@ -141,7 +151,7 @@ class DataCleaner:
         - Default method is "zscore".
         - inplace: Whether to modify the dataframe in place. Default is True.
 
-        Returns: 
+        Returns:
         - None: The function modifies the dataframe in place.
         - pd.DataFrame: If inplace is False, returns a new DataFrame with outliers removed.
 
@@ -152,8 +162,15 @@ class DataCleaner:
         >>> cleaner.remove_outliers(method="zscore", threshold=2.0)  # inplace usage
         >>> cleaned = cleaner.remove_outliers(method="iqr", inplace=False)  # functional usage
 
-        '''
-    def remove_outliers(self, method: Literal["zscore", "iqr"] = "zscore", threshold: Optional[float] = 3.0, *, inplace: bool = True) -> Optional[pd.DataFrame]:
+        """
+
+    def remove_outliers(
+        self,
+        method: Literal["zscore", "iqr"] = "zscore",
+        threshold: Optional[float] = 3.0,
+        *,
+        inplace: bool = True,
+    ) -> Optional[pd.DataFrame]:
         """
         Remove outliers using z-score or IQR on numeric columns.
         - zscore: uses `threshold` for z-score cutoff.
@@ -182,17 +199,23 @@ class DataCleaner:
                 result = target.loc[mask]
 
             else:
-                raise ValueError(f"Unknown method: {method}. Please choose from 'zscore' or 'iqr'.")
+                raise ValueError(
+                    f"Unknown method: {method}. Please choose from 'zscore' or 'iqr'."
+                )
 
         if inplace:
             self.df = result
             return None
         return result
 
-        
-    #normalizing data
-    def normalize_data(self, method: Literal["minmax", "zscore", "mean"] = "minmax", *, inplace: bool = True) -> Optional[pd.DataFrame]:
-        '''
+    # normalizing data
+    def normalize_data(
+        self,
+        method: Literal["minmax", "zscore", "mean"] = "minmax",
+        *,
+        inplace: bool = True,
+    ) -> Optional[pd.DataFrame]:
+        """
         This function normalizes the data in the dataframe using the specified methods.
 
         Parameters:
@@ -202,7 +225,7 @@ class DataCleaner:
             -"mean"
         -Default: "minmax" normalization is applied.
         - inplace: Whether to modify the dataframe in place. Default is True.
-            
+
         Returns: None: The function modifies the dataframe in place.
 
         Examples:
@@ -211,7 +234,7 @@ class DataCleaner:
         >>> cleaner = DataCleaner(df)
         >>> cleaner.normalize_data(method="minmax")               # modifies cleaner.df
         >>> scaled = cleaner.normalize_data(method="zscore", inplace=False)  # returns scaled DataFrame
-        '''
+        """
 
         target = self.df if inplace else self.df.copy()
         numeric = target.select_dtypes(include=[np.number])
@@ -228,18 +251,19 @@ class DataCleaner:
             target[numeric.columns] = (numeric - numeric.mean()) / denom
 
         else:
-            raise ValueError(f"Unknown method: {method}. Please choose from 'minmax', 'zscore', or 'mean'.")
+            raise ValueError(
+                f"Unknown method: {method}. Please choose from 'minmax', 'zscore', or 'mean'."
+            )
 
         if inplace:
             self.df = target
             return None
         return target
 
-
-    #save cleaned data
+    # save cleaned data
 
     def save_cleaned_data(self, output_path: str) -> None:
-        '''
+        """
         This function saves the cleaned dataframe to the specified output path.
 
         Parameters:
@@ -255,5 +279,5 @@ class DataCleaner:
         >>> cleaner.save_cleaned_data(out)
         >>> os.path.exists(out)
         True
-        '''
+        """
         self.df.to_csv(output_path, index=False)
