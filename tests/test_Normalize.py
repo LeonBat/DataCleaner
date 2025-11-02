@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 from dctoolkit.cleaner import DataCleaner
 
+
 def test_normalize_minmax_and_zscore(DataCleaner):
     df = pd.DataFrame({"A": [1, 2, 3, 4, 5], "B": [10, 20, 30, 40, 50]})
     cleaner = DataCleaner(df.copy())

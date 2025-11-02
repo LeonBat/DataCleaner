@@ -1,6 +1,7 @@
 import pandas as pd
 from dctoolkit.cleaner import DataCleaner
 
+
 def test_remove_outliers_iqr_and_zscore_behavior(DataCleaner):
     df = pd.DataFrame({"A": [1, 2, 3, 4, 100], "B": [10, 20, 30, 40, 200]})
 

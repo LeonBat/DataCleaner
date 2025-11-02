@@ -1,6 +1,7 @@
 import pandas as pd
 from dctoolkit.cleaner import DataCleaner
 
+
 def test_remove_duplicates_inplace_and_functional(DataCleaner):
     df = pd.DataFrame({"A": [1, 2, 2, 3], "B": ["a", "b", "b", "c"]})
     cleaner = DataCleaner(df.copy())

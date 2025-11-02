@@ -1,6 +1,7 @@
 import pandas as pd
 from dctoolkit.cleaner import DataCleaner
 
+
 def test_init_with_dataframe_and_path(DataCleaner, tmp_path):
     df = pd.DataFrame({"x": [1, 2, None], "y": ["a", "b", "c"]})
     cleaner = DataCleaner(df)
