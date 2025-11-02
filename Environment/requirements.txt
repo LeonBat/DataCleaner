@@ -1,0 +1,26 @@
+black @ file:///C:/miniconda3/conda-bld/black_1760632469648/work
+Bottleneck @ file:///C:/b/abs_816hr2khp1/croot/bottleneck_1731058648110/work
+click @ file:///C:/b/abs_bbg7qqz4dk/croot/click_1754477951021/work
+colorama @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/colorama_1729036581634/work
+iniconfig @ file:///C:/b/abs_70kaor_ccd/croot/iniconfig_1752653749904/work
+mkl-service==2.5.2
+mkl_fft @ file:///C:/miniconda3/conda-bld/mkl_fft_1761592916781/work
+mkl_random @ file:///C:/miniconda3/conda-bld/mkl_random_1761593076691/work
+mypy_extensions @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/mypy_extensions_1729049023435/work
+numexpr @ file:///C:/b/abs_3buvfgcf6r/croot/numexpr_1755766488094/work
+numpy @ file:///C:/miniconda3/conda-bld/numpy_and_numpy_base_1760547750618/work/dist/numpy-2.3.3-cp313-cp313-win_amd64.whl#sha256=2ce6753b643572567dbca1781ab9bd4fc2ff03e38a66658e41dfb1b198a26cba
+packaging @ file:///C:/miniconda3/conda-bld/packaging_1761049099114/work
+pandas @ file:///C:/miniconda3/conda-bld/pandas_1759822262809/work/dist/pandas-2.3.3-cp313-cp313-win_amd64.whl#sha256=ee1164c2c28648887529c4d3fb2919f738fb0d776be083cc1448b87ce36e0d50
+pathspec @ file:///C:/miniconda3/conda-bld/pathspec_1761820745063/work
+platformdirs @ file:///C:/b/abs_ddh15014or/croot/platformdirs_1744273060660/work
+pluggy @ file:///C:/b/abs_dfec_m79vo/croot/pluggy_1733170145382/work
+Pygments @ file:///C:/b/abs_e4bg5vh5j_/croot/pygments_1744667628203/work
+pytest @ file:///C:/miniconda3/conda-bld/pytest_1758125117201/work
+pytest-mock @ file:///C:/miniconda3/conda-bld/pytest-mock_1757697812233/work
+python-dateutil @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/python-dateutil_1729038406576/work
+pytokens @ file:///C:/miniconda3/conda-bld/pytokens_1760629667766/work
+pytz @ file:///C:/b/abs_f8wdzeix0n/croot/pytz_1752135878094/work
+setuptools==80.9.0
+six @ file:///C:/b/abs_149wuyuo1o/croot/six_1744271521515/work
+tzdata @ file:///croot/python-tzdata_1746123641790/work
+wheel==0.45.1
