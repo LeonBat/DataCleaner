@@ -13,7 +13,6 @@
 
 # Libraries
 from typing import Literal, Optional
-from unicodedata import numeric
 import pandas as pd
 import numpy as np
 
@@ -74,6 +73,7 @@ class DataCleaner:
         >>> new_df = cleaner.fill_missing("mean", inplace=False)  # returns filled DataFrame   
         '''
         target = self.df if inplace else self.df.copy() #determines if inplace modification or copy
+        
         if strategy == "mean":
             target.fillna(target.mean(numeric_only=True), inplace=True)
 
@@ -84,7 +84,8 @@ class DataCleaner:
             for column in target.columns:
                 modes = target[column].mode()
                 if not modes.empty:
-                    target[column].fillna(modes.iloc[0], inplace=True)
+                    # avoid chained-assignment / inplace on Series — assign back
+                    target[column] = target[column].fillna(modes.iloc[0])
                 # if no mode (all NaN) leave values as NaN
 
         elif strategy == "drop":
@@ -160,41 +161,28 @@ class DataCleaner:
         If inplace is True (default) updates self.df and returns None, otherwise returns a filtered DataFrame.
         """
         target = self.df if inplace else self.df.copy()
-        if method == "zscore":
-            numeric = target.select_dtypes(include=[np.number])
-            if numeric.empty:
-                # nothing to do
-                result = target
-            else:
+        numeric = target.select_dtypes(include=[np.number])
+        if numeric.empty:
+            result = target
+        else:
+            if method == "zscore":
                 std = numeric.std(ddof=0).replace(0, 1)
                 z_scores = np.abs((numeric - numeric.mean()) / std)
                 mask = (z_scores < threshold).all(axis=1)
                 result = target.loc[mask]
 
-        elif method == "iqr":
-            numeric = target.select_dtypes(include=[np.number])
-            if numeric.empty:
-                result = target
-            else:
-                std = numeric.std(ddof=0).replace(0, 1)
-                z_scores = np.abs((numeric - numeric.mean()) / std)
-                mask = (z_scores < threshold).all(axis=1)
-                result = target.loc[mask]
-
-        elif method == "iqr":
-            numeric = target.select_dtypes(include=[np.number])
-            if numeric.empty:
-                result = target
-            else:
+            elif method == "iqr":
                 Q1 = numeric.quantile(0.25)
                 Q3 = numeric.quantile(0.75)
                 IQR = Q3 - Q1
                 k = 1.5
-                mask = ~((numeric < (Q1 - k * IQR)) | (numeric > (Q3 + k * IQR))).any(axis=1)
+                lower = Q1 - k * IQR
+                upper = Q3 + k * IQR
+                mask = ~((numeric < lower) | (numeric > upper)).any(axis=1)
                 result = target.loc[mask]
 
-        else:
-            raise ValueError(f"Unknown method: {method}. Please choose from 'zscore' or 'iqr'.")
+            else:
+                raise ValueError(f"Unknown method: {method}. Please choose from 'zscore' or 'iqr'.")
 
         if inplace:
             self.df = result
