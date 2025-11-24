@@ -211,3 +211,7 @@ __marimo__/
 *csv
 #don't include xlsx files
 *xlsx
+.vscode/
+
+# Don't include Environment folder
+Environment/
