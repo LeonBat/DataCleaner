@@ -1,28 +1,26 @@
 import importlib.util
 import pathlib
 import pytest
+import sys
 
-# Try to import DataCleaner from the package, fall back to loading the module file
+# ensure src/ is discoverable so `import dctoolkit` works without installing the package
+repo_root = pathlib.Path(__file__).parents[1]
+src_dir = repo_root / "src"
+if str(src_dir) not in sys.path:
+    sys.path.insert(0, str(src_dir))
+
+# try normal import first
 try:
     from dctoolkit.cleaner import DataCleaner as _DataCleaner
 except Exception:
-    try:
-        import dctoolkit as _dc
-
-        _DataCleaner = getattr(_dc, "DataCleaner", None)
-    except Exception:
-        _DataCleaner = None
-
-    if _DataCleaner is None:
-        # last-resort: load the module by path
-        repo_root = pathlib.Path(__file__).parents[1]
-        mod_path = repo_root / "dctoolkit" / "cleaner.py"
-        spec = importlib.util.spec_from_file_location(
-            "dctoolkit.cleaner", str(mod_path)
-        )
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
-        _DataCleaner = getattr(mod, "DataCleaner")
+    # fallback: load module directly from src/dctoolkit/cleaner.py
+    mod_path = src_dir / "dctoolkit" / "cleaner.py"
+    if not mod_path.exists():
+        raise FileNotFoundError(f"Expected module at {mod_path!s}")
+    spec = importlib.util.spec_from_file_location("dctoolkit.cleaner", str(mod_path))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    _DataCleaner = getattr(mod, "DataCleaner")
 
 
 @pytest.fixture
